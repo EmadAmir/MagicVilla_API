@@ -4,6 +4,7 @@ using MagicVilla_VillaAPI.Models.Dto;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 
 namespace MagicVilla_VillaAPI.Controllers
 {
@@ -157,7 +158,7 @@ namespace MagicVilla_VillaAPI.Controllers
                 return BadRequest();
             }
 
-            var villa = _db.Villas.FirstOrDefault(x => x.Id == id);
+            var villa = _db.Villas.AsNoTracking().FirstOrDefault(x => x.Id == id);
 
             VillaDTO villaDTO = new()
             {
