@@ -30,14 +30,14 @@ namespace MagicVilla_VillaAPI.Controllers
         {
             try 
             {
-                IEnumerable<VillaNumber> villaNumbersList = await _dbVillaNumber.GetAllAsync();
+                IEnumerable<VillaNumber> villaNumbersList = await _dbVillaNumber.GetAllAsync(includeProperties:"Villa");
                 _response.Result = _mapper.Map<List<VillaNumberDTO>>(villaNumbersList);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
             catch(Exception ex) 
             { 
-                _response.ErrorMessage = new List<string>() { ex.ToString()};
+                _response.ErrorMessages = new List<string>() { ex.ToString()};
                 _response.IsSuccess = false;
                 return _response; 
             }           
@@ -73,7 +73,7 @@ namespace MagicVilla_VillaAPI.Controllers
             catch(Exception ex)
             {
                 _response.IsSuccess=false;
-                _response.ErrorMessage.Add(ex.Message);
+                _response.ErrorMessages.Add(ex.Message);
                 return _response;
             }
 
@@ -89,14 +89,13 @@ namespace MagicVilla_VillaAPI.Controllers
             {
                 if (await _dbVillaNumber.GetAsync(x => x.VillaNo == createDTO.VillaNo) != null)
                 {
-                    ModelState.AddModelError("CustomError", "Villa number already exists");
-                    _response.IsSuccess = false;
+                    ModelState.AddModelError("ErrorMessages", "Villa number already exists");
                     return BadRequest(ModelState);
                 }
 
                 if (await _dbVilla.GetAsync(x => x.Id == createDTO.VillaID) == null)
                 {
-                    ModelState.AddModelError("CustomError", "VillaID is not valid");
+                    ModelState.AddModelError("ErrorMessages", "VillaID is not valid");
                     _response.IsSuccess = false;
                     return BadRequest(ModelState);
                 }
@@ -117,7 +116,7 @@ namespace MagicVilla_VillaAPI.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessage.Add(ex.Message.ToString());
+                _response.ErrorMessages.Add(ex.Message.ToString());
                 return _response;
             }
         }
@@ -148,15 +147,18 @@ namespace MagicVilla_VillaAPI.Controllers
 
                 await _dbVillaNumber.RemoveAsync(villaNumber);
                 _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
                 return Ok(_response);
 
             }
             catch (Exception ex) 
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessage.Add(ex.Message);
-                return _response;
+                _response.ErrorMessages
+                     = new List<string>() { ex.ToString() };
+
             }
+            return _response;
         }
 
         [HttpPut("id:int", Name ="UpdateVillaNumber")]
@@ -175,7 +177,7 @@ namespace MagicVilla_VillaAPI.Controllers
 
                 if (await _dbVilla.GetAsync(x => x.Id == updateDTO.VillaID) == null)
                 {
-                    ModelState.AddModelError("CustomError", "VillaID is not valid");
+                    ModelState.AddModelError("ErrorMessages", "VillaID is not valid");
                     _response.IsSuccess = false;
                     return BadRequest(ModelState);
                 }
@@ -184,14 +186,16 @@ namespace MagicVilla_VillaAPI.Controllers
 
                 await _dbVillaNumber.UpdateAsync(villaNumber);
                 _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
                 return Ok(_response);
             }
             catch (Exception ex) 
             {
-                _response.ErrorMessage.Add(ex.Message);
+                _response.ErrorMessages = new List<string>() { ex.ToString()};
                 _response.IsSuccess = false;    
-                return _response;
+               
             }
+            return _response;
         }
 
 
