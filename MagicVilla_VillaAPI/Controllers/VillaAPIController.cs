@@ -43,7 +43,7 @@ namespace MagicVilla_VillaAPI.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessage = new List<string> { ex.Message };
+                _response.ErrorMessages = new List<string> { ex.Message };
                 return _response;
             }
         }
@@ -81,7 +81,7 @@ namespace MagicVilla_VillaAPI.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessage = new List<string> { ex.Message };
+                _response.ErrorMessages = new List<string> { ex.Message };
                 return _response;
             }
         }
@@ -97,7 +97,7 @@ namespace MagicVilla_VillaAPI.Controllers
                 if (await _dbVilla.GetAsync(x => x.Name.ToLower() == createDTO.Name.ToLower()) != null)
                 {
 
-                    ModelState.AddModelError("CustomError", "Villa already exists");
+                    ModelState.AddModelError("ErrorMessages", "Villa already exists");
                     _response.IsSuccess = false;
                     return BadRequest(ModelState);
                 }
@@ -119,7 +119,7 @@ namespace MagicVilla_VillaAPI.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessage = new List<string> { ex.Message };
+                _response.ErrorMessages = new List<string> { ex.Message };
                 return _response;
             }
 
@@ -157,7 +157,7 @@ namespace MagicVilla_VillaAPI.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
-                _response.ErrorMessage = new List<string> { ex.Message };
+                _response.ErrorMessages = new List<string> { ex.Message };
                 return _response;
             }
         }
@@ -186,7 +186,7 @@ namespace MagicVilla_VillaAPI.Controllers
             }
             catch (Exception ex)
             {
-                _response.ErrorMessage.Add(ex.Message);
+                _response.ErrorMessages.Add(ex.Message);
                 _response.IsSuccess = false;
                 return _response;
             }

@@ -2,6 +2,7 @@
 using MagicVilla_Web.Models;
 using MagicVilla_Web.Services.IServices;
 using Newtonsoft.Json;
+using System.Net;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -50,16 +51,44 @@ namespace MagicVilla_Web.Services
                 apiResponse = await client.SendAsync(message);
 
                 var apiContent = await apiResponse.Content.ReadAsStringAsync();
-                var APIResponse = JsonConvert.DeserializeObject<T>(apiContent);
 
+                try 
+                {
+                    APIResponse ApiResponse = JsonConvert.DeserializeObject<APIResponse>(apiContent);
+                    if (apiResponse.StatusCode == HttpStatusCode.NotFound ||
+                        apiResponse.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        switch (apiResponse.StatusCode)
+                        {
+                            case HttpStatusCode.NotFound:
+                                ApiResponse.StatusCode = HttpStatusCode.NotFound;
+                                break;
+                            default:
+                                ApiResponse.StatusCode = HttpStatusCode.BadRequest;
+                                break;
+                        }
+                        ApiResponse.IsSuccess = false;
+                        var res = JsonConvert.SerializeObject(ApiResponse);
+                        var returnObj = JsonConvert.DeserializeObject<T>(res); //deserializing to maintain the generic
+
+                        return returnObj;
+                    }
+                }
+                catch (Exception ex) 
+                {
+                    var exceptionResponse = JsonConvert.DeserializeObject<T>(apiContent);
+                    return exceptionResponse;
+                }
+
+                var APIResponse = JsonConvert.DeserializeObject<T>(apiContent);
                 return APIResponse;
             }
             catch (Exception ex)
             {
                 APIResponse dto = new APIResponse
                 {
-                    ErrorMessage = new List<string> { Convert.ToString(ex.Message) },
-                    IsSuccess = true,
+                    ErrorMessages = new List<string> { Convert.ToString(ex.Message) },
+                    IsSuccess = false
 
                 };
 
