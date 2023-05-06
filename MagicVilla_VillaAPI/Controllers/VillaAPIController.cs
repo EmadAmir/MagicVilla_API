@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Web.Http.Cors;
 
 namespace MagicVilla_VillaAPI.Controllers
 {
