@@ -5,6 +5,7 @@ using MagicVilla_VillaAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Web.Http.Cors;
 
 namespace MagicVilla_VillaAPI.Controllers
 {
@@ -121,22 +122,23 @@ namespace MagicVilla_VillaAPI.Controllers
             }
         }
 
-        [HttpDelete("id:int", Name = "DeleteVillaNumber")]
+        [HttpDelete("{villaNo:int}", Name = "DeleteVillaNumber")]
+        [HttpDelete]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> DeleteVillaNumber(int id)
+        public async Task<ActionResult<APIResponse>> DeleteVillaNumber(int villaNo)
         {
             try 
             {
-                if (id == 0)
+                if (villaNo == 0)
                 {
                     _response.IsSuccess = false;
                     _response.StatusCode=HttpStatusCode.BadRequest;
                     return BadRequest(_response);
                 }
 
-                var villaNumber = await _dbVillaNumber.GetAsync(x => x.VillaNo == id);
+                var villaNumber = await _dbVillaNumber.GetAsync(x => x.VillaNo == villaNo);
 
                 if (villaNumber == null)
                 { 
@@ -161,20 +163,23 @@ namespace MagicVilla_VillaAPI.Controllers
             return _response;
         }
 
-        [HttpPut("id:int", Name ="UpdateVillaNumber")]
+        [HttpPut("{villaNo:int}", Name = "UpdateVillaNumber")]
+        //[HttpPut]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse>> UpdateVillaNumber(int id, [FromBody] VillaNumberUpdateDTO updateDTO)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult<APIResponse>> UpdateVillaNumber(int villaNo, [FromBody] VillaNumberUpdateDTO updateDTO)
         {
             try 
             {
-                if (updateDTO != null && id != updateDTO.VillaNo)
+                if (updateDTO == null && villaNo != updateDTO.VillaNo)
                 {
-                    _response.IsSuccess = false;
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
-
+                //foreign key reference
                 if (await _dbVilla.GetAsync(x => x.Id == updateDTO.VillaID) == null)
                 {
                     ModelState.AddModelError("ErrorMessages", "VillaID is not valid");
@@ -185,8 +190,9 @@ namespace MagicVilla_VillaAPI.Controllers
                 VillaNumber villaNumber = _mapper.Map<VillaNumber>(updateDTO);
 
                 await _dbVillaNumber.UpdateAsync(villaNumber);
-                _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;
+                _response.StatusCode = HttpStatusCode.NoContent;
+
                 return Ok(_response);
             }
             catch (Exception ex) 

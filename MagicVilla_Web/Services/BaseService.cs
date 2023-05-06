@@ -11,7 +11,7 @@ namespace MagicVilla_Web.Services
     public class BaseService : IBaseService
     {
         public APIResponse responseModel { get; set; }
-        public IHttpClientFactory httpClient  { get; set; }
+        public IHttpClientFactory httpClient { get; set; }
 
         public BaseService(IHttpClientFactory httpClient)
         {
@@ -20,15 +20,15 @@ namespace MagicVilla_Web.Services
         }
         public async Task<T> SendAsync<T>(APIRequest apiRequest)
         {
-            try 
-            { 
+            try
+            {
                 var client = httpClient.CreateClient("MagicApi");
                 HttpRequestMessage message = new HttpRequestMessage();
                 message.Headers.Add("Accept", "application/json");
                 message.RequestUri = new Uri(apiRequest.Url);
                 if (apiRequest.Data != null)
                 {
-                    message.Content = new StringContent(JsonConvert.SerializeObject(apiRequest.Data),Encoding.UTF8,"application/json");
+                    message.Content = new StringContent(JsonConvert.SerializeObject(apiRequest.Data), Encoding.UTF8, "application/json");
                 }
 
                 switch (apiRequest.ApiType)
@@ -52,7 +52,7 @@ namespace MagicVilla_Web.Services
 
                 var apiContent = await apiResponse.Content.ReadAsStringAsync();
 
-                try 
+                try
                 {
                     APIResponse ApiResponse = JsonConvert.DeserializeObject<APIResponse>(apiContent);
                     if (apiResponse.StatusCode == HttpStatusCode.NotFound ||
@@ -74,7 +74,7 @@ namespace MagicVilla_Web.Services
                         return returnObj;
                     }
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     var exceptionResponse = JsonConvert.DeserializeObject<T>(apiContent);
                     return exceptionResponse;

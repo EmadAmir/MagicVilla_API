@@ -54,11 +54,11 @@ namespace MagicVilla_Web.Services
 
         public Task<T> UpdateAsync<T>(VillaNumberUpdateDTO dto)
         {
-            return SendAsync<T>(new APIRequest()
+            return SendAsync<T>(new APIRequest
             {
                 ApiType = SD.ApiType.PUT,
                 Data = dto,
-                Url = villaUrl + "/api/VillaNumberAPI/" + dto.VillaNo
+                Url = villaUrl + "/api/VillaNumberAPI" + "/" + dto.VillaNo
             });
         }
     }
