@@ -7,8 +7,9 @@ using System.Net;
 
 namespace MagicVilla_VillaAPI.Controllers
 {
-    [Route("api/UsersAuth")]
+    [Route("api/v{version:apiVersion}/UsersAuth")]
     [ApiController]
+    [ApiVersionNeutral]
     public class UsersController : Controller
     {
         private readonly IUserRepository _userRepo;
@@ -17,13 +18,13 @@ namespace MagicVilla_VillaAPI.Controllers
         public UsersController(IUserRepository userRepository)
         {
             _userRepo = userRepository;
-            this._response = new APIResponse();
+            _response = new APIResponse();
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
-             var loginResponse = await _userRepo.Login(model);
+            var loginResponse = await _userRepo.Login(model);
 
             if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
             {
@@ -45,7 +46,7 @@ namespace MagicVilla_VillaAPI.Controllers
 
             if (!ifUserNameUnique)
             {
-                _response.StatusCode=HttpStatusCode.BadRequest;
+                _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add("Username already exists!");
                 return BadRequest(_response);
@@ -60,7 +61,7 @@ namespace MagicVilla_VillaAPI.Controllers
             }
             _response.IsSuccess = true;
             _response.StatusCode = HttpStatusCode.OK;
-;
+            ;
             return Ok(_response);
         }
     }

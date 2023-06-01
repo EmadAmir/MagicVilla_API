@@ -12,10 +12,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Web.Http.Cors;
 
-namespace MagicVilla_VillaAPI.Controllers
+namespace MagicVilla_VillaAPI.Controllers.v1
 {
-    [Route("api/VillaAPI")]
+    [Route("api/v{version:apiVersion}/VillaAPI")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class VillaAPIController : ControllerBase
     {
         private readonly IVillaRepository _dbVilla;
@@ -26,12 +27,13 @@ namespace MagicVilla_VillaAPI.Controllers
         {
             _dbVilla = dbVilla;
             _mapper = mapper;
-            this._response = new APIResponse();
+            _response = new APIResponse();
         }
 
 
         [HttpGet]
         //[Authorize]
+        [ResponseCache(CacheProfileName = "DefaultCaching")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -95,7 +97,7 @@ namespace MagicVilla_VillaAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="admin")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status201Created)]
